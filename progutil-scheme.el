@@ -5,6 +5,59 @@
 ;;; Code:
 
 (require 'scheme)
+(require 'subr-x)
+(require 'info)
+(require 'helm)
+
+(defvar progutil-scheme--info-files
+  '((gauche . "gauche-refe")))
+
+(defvar progutil-scheme--interpreter nil)
+(defvar progutil-scheme--info-nodes nil)
+
+(defun progutil-scheme--collect-info-nodes ()
+  (save-window-excursion
+    (info (assoc-default progutil-scheme--interpreter progutil-scheme--info-files))
+    (let ((infobuf (current-buffer))
+          Info-history
+          nodes)
+      (dolist (node (Info-index-nodes))
+        (Info-goto-node node)
+        (goto-char (point-min))
+        (while (search-forward "\n* " nil t)
+          (unless (search-forward "Menu:\n" (1+ (point-at-eol)) t)
+            (let* ((line (buffer-substring-no-properties
+                          (+ (line-beginning-position) 2) (line-end-position))))
+              (push line nodes)))))
+      (nreverse nodes))))
+
+(defun progutil-scheme--info-position (line)
+  ;; This regexp is stolen from Info-apropos-matches
+  (let ((info-file (assoc-default progutil-scheme--interpreter progutil-scheme--info-files)))
+    (when (string-match
+           "\\([^\n]*.+[^\n]*\\):[ \t]+\\([^\n]*\\)\\.\\(?:[ \t\n]*(line +\\([0-9]+\\))\\)?"
+           line)
+      (cons (format "(%s)%s" info-file (match-string-no-properties 2 line))
+            (string-to-number (or (match-string-no-properties 3 line) "1"))))))
+
+(defun progutil-scheme--info-other-window (cand)
+  (let ((info-pos (progutil-scheme--info-position cand)))
+    (info-other-window (car info-pos))
+    (goto-char (point-min))
+    (forward-line (1- (cdr info-pos)))))
+
+(defvar helm-progutil--gauche-source
+  (helm-build-sync-source "Gauche Index"
+    :candidates (lambda () progutil-scheme--info-nodes)
+    :action #'progutil-scheme--info-other-window))
+
+(defun helm-progutil-gauche-info ()
+  (interactive)
+  (let ((helm-execute-action-at-once-if-one t)
+        (input (when-let ((input (thing-at-point 'symbol)))
+                 (substring-no-properties input))))
+    (helm :sources '(helm-progutil--gauche-source)
+          :buffer "*gauche info*" :input input)))
 
 (defun progutil-scheme--indent-setup ()
   (put 'and-let* 'scheme-indent-function 1)
@@ -69,11 +122,19 @@
   (put 'guard 'scheme-indent-function 1))
 
 ;;;###autoload
-(defun progutil-scheme-setup (type)
+(defun progutil-scheme-setup (prog)
   (let ((interpreters '((gauche . "gosh")
                         (guile . "guile"))))
-    (setq-default scheme-program-name (assoc-default type interpreters))
-    (progutil-scheme--indent-setup)))
+    ;; interpreter
+    (setq progutil-scheme--interpreter prog)
+    (setq-default scheme-program-name (assoc-default prog interpreters))
+
+    ;; documentation
+    (setq progutil-scheme--info-nodes (progutil-scheme--collect-info-nodes))
+
+    (progutil-scheme--indent-setup)
+
+    (define-key scheme-mode-map (kbd "C-c C-d") #'helm-progutil-gauche-info)))
 
 (provide 'progutil-scheme)
 
