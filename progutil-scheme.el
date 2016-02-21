@@ -72,7 +72,7 @@
 (defun progutil-scheme-setup (type)
   (let ((interpreters '((gauche . "gosh")
                         (guile . "guile"))))
-    (setq-default scheme-program-name (assoc-default type type))
+    (setq-default scheme-program-name (assoc-default type interpreters))
     (progutil-scheme--indent-setup)))
 
 (provide 'progutil-scheme)
