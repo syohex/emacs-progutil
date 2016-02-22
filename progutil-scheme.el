@@ -75,6 +75,7 @@
   (put 'call-with-values 'scheme-indent-function 1)
   (put 'dolist 'scheme-indent-function 1)
   (put 'dotimes 'scheme-indent-function 1)
+  (put 'if-let1 'scheme-indent-function 2)
   (put 'if-match 'scheme-indent-function 2)
   (put 'let*-values 'scheme-indent-function 1)
   (put 'let-args 'scheme-indent-function 2)
