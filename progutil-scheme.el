@@ -8,12 +8,14 @@
 (require 'subr-x)
 (require 'info)
 (require 'helm)
+(require 'company)
 
 (defvar progutil-scheme--info-files
   '((gauche . "gauche-refe")))
 
 (defvar progutil-scheme--interpreter nil)
 (defvar progutil-scheme--info-nodes nil)
+(defvar progutil-scheme--complete-candidates nil)
 
 (defun progutil-scheme--collect-info-nodes ()
   (save-window-excursion
@@ -123,6 +125,19 @@
   (put 'guard 'scheme-indent-function 1))
 
 ;;;###autoload
+(defun company-progutil-scheme (command &optional arg &rest ignored)
+  (interactive (list 'interactive))
+  (cl-case command
+    (interactive (company-begin-backend 'company-progutil-scheme))
+    (prefix (and (derived-mode-p 'scheme-mode)
+                 (or (company-grab-symbol) 'stop)))
+    (candidates (cl-loop for cand in progutil-scheme--complete-candidates
+                         when (string-prefix-p arg cand)
+                         collect cand))
+    (location nil)
+    (sorted t)))
+
+;;;###autoload
 (defun progutil-scheme-setup (prog)
   (let ((interpreters '((gauche . "gosh")
                         (guile . "guile"))))
@@ -132,6 +147,13 @@
 
     ;; documentation
     (setq progutil-scheme--info-nodes (progutil-scheme--collect-info-nodes))
+
+    ;; completions
+    (setq progutil-scheme--complete-candidates
+          (cl-loop for node in progutil-scheme--info-nodes
+                   when (string-match "\\`\\([a-z][-a-z0-9<>=!?/]+\\)" node)
+                   collect (match-string-no-properties 1 node)))
+    (delete-dups progutil-scheme--complete-candidates)
 
     (progutil-scheme--indent-setup)
 
