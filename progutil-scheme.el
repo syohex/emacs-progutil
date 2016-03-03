@@ -159,6 +159,10 @@
 
     (define-key scheme-mode-map (kbd "C-c C-d") #'helm-progutil-gauche-info)))
 
+;;;###autoload
+(defun progutil-scheme-hook ()
+  (setq-local company-backends '(company-progutil-scheme company-dabbrev)))
+
 (provide 'progutil-scheme)
 
 ;;; progutil-scheme.el ends here
