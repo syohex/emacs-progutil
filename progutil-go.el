@@ -7,18 +7,6 @@
 (require 'go-mode)
 (require 'go-eldoc)
 
-(defvar progutil-go--impl-interfaces
-  '("http.Handler"))
-
-(defun progutil-go-impl (receiver interface)
-  (interactive
-   (list
-    (read-string "Receiver: ")
-    (completing-read "Interface: " progutil-go--impl-interfaces)))
-  (save-excursion
-    (unless (process-file "impl" nil t nil receiver interface)
-      (error "Error: 'impl' interface=%s" interface))))
-
 (defun progutil-go-type-at-cursor ()
   (interactive)
   (save-excursion
