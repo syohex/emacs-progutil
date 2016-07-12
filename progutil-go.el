@@ -33,4 +33,6 @@
   (define-key go-mode-map (kbd "C-c C-s") 'progutil-go-gofmt)
   (define-key go-mode-map (kbd "C-c ?") 'progutil-go-type-at-cursor))
 
+(require 'progutil-go)
+
 ;;; progutil-go.el ends here
