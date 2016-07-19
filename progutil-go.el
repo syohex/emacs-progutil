@@ -31,7 +31,7 @@
 (defun progutil-go-gom-gopath ()
   "This is for `go-set-project` of go-mode"
   (let ((vendor (or (locate-dominating-file buffer-file-name "_vendor")
-                    (locate-dominating-file buffer-file-name "vendor")))
+                    (locate-dominating-file buffer-file-name "vendor"))))
     (when vendor
       (list vendor))))
 
@@ -42,6 +42,6 @@
 
   (add-to-list 'go-guess-gopath-functions #'progutil-go-gom-gopath))
 
-(require 'progutil-go)
+(provide 'progutil-go)
 
 ;;; progutil-go.el ends here
