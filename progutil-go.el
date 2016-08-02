@@ -33,7 +33,8 @@
   (let ((vendor (or (locate-dominating-file buffer-file-name "_vendor")
                     (locate-dominating-file buffer-file-name "vendor"))))
     (when vendor
-      (list vendor))))
+      (when (file-directory-p (concat vendor "src"))
+        (list vendor)))))
 
 ;;;###autoload
 (defun progutil-go-setup ()
