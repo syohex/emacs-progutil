@@ -5,7 +5,7 @@
 ;; Author: Syohei YOSHIDA <syohex@gmail.com>
 ;; URL: https://github.com/syohex/emacs-progutil
 ;; Version: 0.01
-;; Package-Requires: ((helm "1.9.0") (company "0.8.12") (go-mode "1.0.0") (go-eldoc "0.27"))
+;; Package-Requires: ((emacs "25.1") (helm "1.9.0") (company "0.8.12") (go-mode "1.0.0") (go-eldoc "0.27"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
