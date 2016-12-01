@@ -36,6 +36,27 @@
       (when (file-directory-p (concat vendor "src"))
         (list vendor)))))
 
+(defun progutil-go-gogetdoc ()
+  (interactive)
+  (let ((file-arg (format "%s:#%d" (buffer-file-name) (point)))
+        (buf (get-buffer-create " *gogetdoc*")))
+    (with-current-buffer buf
+      (read-only-mode -1)
+      (erase-buffer))
+    (let ((proc (start-file-process "gogetdoc" buf "gogetdoc" "-pos" file-arg)))
+      (set-process-sentinel
+       proc
+       (lambda (p status)
+         (let ((status (process-status p)))
+           (when (eq status 'exit)
+             (unless (zerop (process-exit-status p))
+               (error "Failed: %s" (buffer-string)))
+             (save-selected-window
+               (with-current-buffer (process-buffer p)
+                 (read-only-mode +1)
+                 (goto-char (point-min))
+                 (pop-to-buffer (current-buffer)))))))))))
+
 ;;;###autoload
 (defun progutil-go-setup ()
   (define-key go-mode-map (kbd "C-c C-s") 'progutil-go-gofmt)
