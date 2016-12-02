@@ -29,13 +29,6 @@
   (when (buffer-modified-p)
     (save-buffer)))
 
-(defun progutil-go-gom-gopath ()
-  "This is for `go-set-project` of go-mode"
-  (when-let ((vendor (or (locate-dominating-file buffer-file-name "_vendor")
-                         (locate-dominating-file buffer-file-name "vendor"))))
-    (when (file-directory-p (concat vendor "src"))
-      (list vendor))))
-
 (defun progutil-go-gogetdoc ()
   (interactive)
   (let ((file-arg (format "%s:#%d" (buffer-file-name) (point)))
@@ -60,9 +53,7 @@
 ;;;###autoload
 (defun progutil-go-setup ()
   (define-key go-mode-map (kbd "C-c C-s") 'progutil-go-gofmt)
-  (define-key go-mode-map (kbd "C-c ?") 'progutil-go-type-at-cursor)
-
-  (add-to-list 'go-guess-gopath-functions #'progutil-go-gom-gopath))
+  (define-key go-mode-map (kbd "C-c ?") 'progutil-go-type-at-cursor))
 
 (provide 'progutil-go)
 
