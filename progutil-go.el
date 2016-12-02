@@ -6,14 +6,15 @@
 
 (require 'go-mode)
 (require 'go-eldoc)
+(require 'subr-x)
 
 (defun progutil-go-type-at-cursor ()
   (interactive)
   (save-excursion
     (unless (looking-at-p "\\>")
       (forward-word 1))
-    (let ((cand (go-eldoc--invoke-autocomplete)))
-      (when (and cand (string-match "\\`\\([^,]+\\),,\\(.+\\)$" cand))
+    (when-let ((cand (go-eldoc--invoke-autocomplete)))
+      (when (string-match "\\`\\([^,]+\\),,\\(.+\\)$" cand)
         (let ((name (match-string-no-properties 1 cand))
               (type (match-string-no-properties 2 cand)))
           (when (string-match "\\`var\\(.+\\)" type)
@@ -30,11 +31,10 @@
 
 (defun progutil-go-gom-gopath ()
   "This is for `go-set-project` of go-mode"
-  (let ((vendor (or (locate-dominating-file buffer-file-name "_vendor")
-                    (locate-dominating-file buffer-file-name "vendor"))))
-    (when vendor
-      (when (file-directory-p (concat vendor "src"))
-        (list vendor)))))
+  (when-let ((vendor (or (locate-dominating-file buffer-file-name "_vendor")
+                         (locate-dominating-file buffer-file-name "vendor"))))
+    (when (file-directory-p (concat vendor "src"))
+      (list vendor))))
 
 (defun progutil-go-gogetdoc ()
   (interactive)
