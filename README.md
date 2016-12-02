@@ -7,3 +7,8 @@ My own programming utilities
 - Ruby
 - Scheme
 - Golang
+
+## Requires
+
+- Golang
+  - [gogetdoc](https://github.com/zmb3/gogetdoc)
