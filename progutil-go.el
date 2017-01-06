@@ -1,6 +1,6 @@
 ;;; progutil-go.el --- My own Ruby utilities
 
-;; Copyright (C) 2016 by Syohei YOSHIDA
+;; Copyright (C) 2017 by Syohei YOSHIDA
 
 ;;; Code:
 
